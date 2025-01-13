@@ -6,7 +6,7 @@
     <artifactId>api-interface</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>api-interface</name>
-    <description>api-interface</description>
+    <description>api服务</description>
     <properties>
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -15,10 +15,27 @@
     </properties>
     <dependencies>
         <dependency>
+            <groupId>com.codehev.api-client-sdk</groupId>
+            <artifactId>api-client-sdk</artifactId>
+            <version>0.0.1</version>
+        </dependency>
+
+        <!-- https://doc.xiaominfo.com/knife4j/documentation/get_start.html-->
+        <dependency>
+            <groupId>com.github.xiaoymin</groupId>
+            <artifactId>knife4j-spring-boot-starter</artifactId>
+            <version>3.0.3</version>
+        </dependency>
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+            <version>5.8.16</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
@@ -65,7 +82,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${spring-boot.version}</version>
                 <configuration>
-                    <mainClass>com.codehev.apiinterface.ApiInterfaceApplication</mainClass>
+                    <mainClass>com.codehev.api_interface.ApiInterfaceApplication</mainClass>
                     <skip>true</skip>
                 </configuration>
                 <executions>

@@ -9,7 +9,13 @@
         <outputRelativeToContentRoot value="true" />
         <module name="api-server" />
         <module name="api-interface" />
+        <module name="api-client-sdk" />
       </profile>
     </annotationProcessing>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="api-client-sdk" options="" />
+    </option>
   </component>
 </project>

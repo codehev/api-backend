@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.codehev.api-client-sdk</groupId>
+    <artifactId>api-client-sdk</artifactId>
+    <version>0.0.1</version>
+    <name>api-client-sdk</name>
+    <description>api-client-sdk</description>
+
+    <properties>
+        <java.version>1.8</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <spring-boot.version>2.6.13</spring-boot.version>
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+            <version>5.8.16</version>
+        </dependency>
+        <!--二选一-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.springframework.boot</groupId>-->
+        <!--            <artifactId>spring-boot-starter</artifactId>-->
+        <!--        </dependency>-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-autoconfigure</artifactId>
+            <!-- 不需要指定版本，版本由 spring-boot-dependencies 管理 -->
+        </dependency>
+
+
+        <!-- 帮助开发者自动生成配置的代码提示-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+            <!-- 不需要指定版本，版本由 spring-boot-dependencies 管理 -->
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+    </dependencies>
+    <!--不能删除,是 Maven 中的一个重要机制，用于集中管理项目的依赖版本-->
+    <dependencyManagement>
+        <dependencies>
+            <!--引入 Spring Boot 的依赖管理，可以确保项目中所有 Spring Boot 相关依赖的版本一致，避免版本冲突。-->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <!--Spring Boot 的 BOM 文件，包含了所有 Spring Boot 相关依赖的版本。-->
+                <artifactId>spring-boot-dependencies</artifactId>
+                <!--动态指定 Spring Boot 的版本。${spring-boot.version} 是一个 Maven 属性，通常定义在 <properties> 中-->
+                <version>${spring-boot.version}</version>
+                <!--引入的是一个 POM 文件（BOM 文件）-->
+                <type>pom</type>
+                <!--导入到当前项目的依赖管理中。-->
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+
+</project>

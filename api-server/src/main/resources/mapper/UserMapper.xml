@@ -2,9 +2,9 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.codehev.apiserver.mapper.UserMapper">
+<mapper namespace="com.codehev.api_server.mapper.UserMapper">
 
-    <resultMap id="BaseResultMap" type="com.codehev.apiserver.model.entity.User">
+    <resultMap id="BaseResultMap" type="com.codehev.api_server.model.entity.User">
             <id property="id" column="id" />
             <result property="userName" column="userName" />
             <result property="userAccount" column="userAccount" />

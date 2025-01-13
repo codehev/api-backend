@@ -1,4 +1,23 @@
 # 应用服务 WEB 访问端口
 server:
+  address: 0.0.0.0
   port: 8101
+  servlet:
+    context-path: /api
+
+
+spring:
+  application:
+    name: api-interface
+  # 默认 dev 环境
+  profiles:
+    active: dev
+  # 支持 swagger3
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+api:
+  client:
+    access-key: codehev
+    secret-key: 123abc
 
