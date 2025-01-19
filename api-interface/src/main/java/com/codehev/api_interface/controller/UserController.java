@@ -1,8 +1,8 @@
 package com.codehev.api_interface.controller;
 
 
-import com.codehev.api_client_sdk.model.User;
-import com.codehev.api_client_sdk.utils.SignUtils;
+import com.codehev.api_interface.model.User;
+import com.codehev.api_interface.utils.SignUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;

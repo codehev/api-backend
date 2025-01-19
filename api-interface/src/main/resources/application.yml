@@ -16,8 +16,3 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
-api:
-  client:
-    access-key: codehev
-    secret-key: 123abc
-

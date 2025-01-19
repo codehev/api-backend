@@ -1,0 +1,12 @@
+# 应用服务 WEB 访问端口
+server:
+  address: 0.0.0.0
+  port: 8102
+  servlet:
+    context-path: /api
+
+api:
+  client:
+    access-key: codehev
+    secret-key: 123abc
+

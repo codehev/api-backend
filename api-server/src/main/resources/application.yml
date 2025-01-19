@@ -90,3 +90,9 @@ cos:
     secretKey: xxx
     region: xxx
     bucket: xxx
+
+# 管理员的账号，业务中发布接口时需要使用，测试连通性
+api:
+  client:
+    access-key: codehev
+    secret-key: 123abc

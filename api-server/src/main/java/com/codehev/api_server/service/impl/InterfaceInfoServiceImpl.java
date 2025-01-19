@@ -9,23 +9,24 @@ import com.codehev.api_server.exception.BusinessException;
 import com.codehev.api_server.exception.ThrowUtils;
 import com.codehev.api_server.mapper.InterfaceInfoMapper;
 import com.codehev.api_server.model.dto.interfaceInfo.InterfaceInfoQueryRequest;
-import com.codehev.api_server.model.entity.*;
 import com.codehev.api_server.model.entity.InterfaceInfo;
+import com.codehev.api_server.model.entity.User;
 import com.codehev.api_server.model.vo.InterfaceInfoVO;
 import com.codehev.api_server.model.vo.UserVO;
 import com.codehev.api_server.service.InterfaceInfoService;
 import com.codehev.api_server.service.UserService;
 import com.codehev.api_server.utils.SqlUtils;
-import com.google.gson.Gson;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -37,13 +38,8 @@ import java.util.stream.Collectors;
 public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, InterfaceInfo>
     implements InterfaceInfoService{
 
-    private final static Gson GSON = new Gson();
-
     @Resource
     private UserService userService;
-
-    @Resource
-    private ElasticsearchRestTemplate elasticsearchRestTemplate;
 
     /**
      * 校验
@@ -58,20 +54,22 @@ public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, I
         Long id = interfaceInfo.getId();
         String name = interfaceInfo.getName();
         String description = interfaceInfo.getDescription();
+        String method = interfaceInfo.getMethod();
         String url = interfaceInfo.getUrl();
         String requestParams = interfaceInfo.getRequestParams();
         String requestHeader = interfaceInfo.getRequestHeader();
         String responseHeader = interfaceInfo.getResponseHeader();
         Integer status = interfaceInfo.getStatus();
-        String method = interfaceInfo.getMethod();
+
         Long userId = interfaceInfo.getUserId();
         Date createTime = interfaceInfo.getCreateTime();
         Date updateTime = interfaceInfo.getUpdateTime();
         Integer isDelete = interfaceInfo.getIsDelete();
 
+
         // 创建时，参数不能为空
         if (add) {
-            ThrowUtils.throwIf(StringUtils.isAnyBlank(name, method, url), ErrorCode.PARAMS_ERROR);
+            ThrowUtils.throwIf(StringUtils.isAnyBlank(name, method, url,requestParams), ErrorCode.PARAMS_ERROR);
         }
         // 有参数则校验
         if (StringUtils.isNotBlank(name) && name.length() > 80) {
@@ -97,15 +95,13 @@ public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, I
         String searchText = interfaceInfoQueryRequest.getSearchText();
         String name = interfaceInfoQueryRequest.getName();
         String description = interfaceInfoQueryRequest.getDescription();
+        String method = interfaceInfoQueryRequest.getMethod();
         String url = interfaceInfoQueryRequest.getUrl();
         String requestParams = interfaceInfoQueryRequest.getRequestParams();
         String requestHeader = interfaceInfoQueryRequest.getRequestHeader();
         String responseHeader = interfaceInfoQueryRequest.getResponseHeader();
         Integer status = interfaceInfoQueryRequest.getStatus();
-        String method = interfaceInfoQueryRequest.getMethod();
         Long userId = interfaceInfoQueryRequest.getUserId();
-        long current = interfaceInfoQueryRequest.getCurrent();
-        long pageSize = interfaceInfoQueryRequest.getPageSize();
         String sortField = interfaceInfoQueryRequest.getSortField();
         String sortOrder = interfaceInfoQueryRequest.getSortOrder();
         
@@ -117,9 +113,14 @@ public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, I
         }
         queryWrapper.like(StringUtils.isNotBlank(name), "name", name);
         queryWrapper.like(StringUtils.isNotBlank(description), "description", description);
+        queryWrapper.like(StringUtils.isNotBlank(method), "method", method);
+        queryWrapper.like(StringUtils.isNotBlank(url), "url", url);
+        queryWrapper.like(StringUtils.isNotBlank(requestParams), "requestParams", requestParams);
+        queryWrapper.like(StringUtils.isNotBlank(requestHeader), "requestHeader", requestHeader);
+        queryWrapper.like(StringUtils.isNotBlank(responseHeader), "responseHeader", responseHeader);
         queryWrapper.eq(ObjectUtils.isNotEmpty(id), "id", id);
         queryWrapper.eq(ObjectUtils.isNotEmpty(userId), "userId", userId);
-        queryWrapper.eq("status", status);
+        queryWrapper.eq(ObjectUtils.isNotEmpty(status),"status", status);
         queryWrapper.eq("isDelete", false);
         queryWrapper.orderBy(
                 SqlUtils.validSortField(sortField), 

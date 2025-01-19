@@ -2,11 +2,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.codehev.api-interface</groupId>
-    <artifactId>api-interface</artifactId>
+
+    <groupId>com.codehev.api-consumer</groupId>
+    <artifactId>api-consumer</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>api-interface</name>
-    <description>api服务</description>
+
+    <name>api-consumer</name>
+    <description>api-consumer</description>
     <properties>
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -14,17 +16,18 @@
         <spring-boot.version>2.6.13</spring-boot.version>
     </properties>
     <dependencies>
-        <!-- https://doc.xiaominfo.com/knife4j/documentation/get_start.html-->
-        <dependency>
-            <groupId>com.github.xiaoymin</groupId>
-            <artifactId>knife4j-spring-boot-starter</artifactId>
-            <version>3.0.3</version>
-        </dependency>
+
         <dependency>
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>
             <version>5.8.16</version>
         </dependency>
+        <dependency>
+            <groupId>com.codehev.api-client-sdk</groupId>
+            <artifactId>api-client-sdk</artifactId>
+            <version>0.0.1</version>
+        </dependency>
+
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -76,7 +79,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${spring-boot.version}</version>
                 <configuration>
-                    <mainClass>com.codehev.api_interface.ApiInterfaceApplication</mainClass>
+                    <mainClass>com.codehev.api_consumer.ApiConsumerApplication</mainClass>
                     <skip>true</skip>
                 </configuration>
                 <executions>
@@ -91,4 +94,15 @@
         </plugins>
     </build>
 
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <spring.profiles.active>dev</spring.profiles.active>
+            </properties>
+        </profile>
+    </profiles>
 </project>

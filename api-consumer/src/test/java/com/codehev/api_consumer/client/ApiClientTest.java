@@ -1,8 +1,7 @@
-package com.codehev.api_interface.client;
+package com.codehev.api_consumer.client;
 
 import com.codehev.api_client_sdk.client.ApiClient;
 import com.codehev.api_client_sdk.model.User;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,20 +14,9 @@ import org.springframework.boot.test.context.SpringBootTest;
  */
 @SpringBootTest
 class ApiClientTest {
+
     @Autowired
     ApiClient apiClient;
-
-//    @BeforeEach
-    void setUp() {
-        String accessKey = "codehev";
-        String secretKey = "123abc";
-
-        apiClient = new ApiClient(accessKey, secretKey);
-    }
-
-    @AfterEach
-    void tearDown() {
-    }
 
     @Test
     void getNameByGet() {

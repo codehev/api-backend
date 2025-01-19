@@ -1,5 +1,6 @@
 package com.codehev.api_server.service.impl;
 
+import cn.hutool.core.util.RandomUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -67,10 +68,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             }
             // 2. 加密
             String encryptPassword = DigestUtils.md5DigestAsHex((SALT + userPassword).getBytes());
-            // 3. 插入数据
+            // 3. 生成 accessKey, secretKey
+            String accessKey = DigestUtils.md5DigestAsHex((SALT + userAccount + RandomUtil.randomNumbers(5)).getBytes());
+            String secretKey = DigestUtils.md5DigestAsHex((SALT + userAccount + RandomUtil.randomNumbers(8)).getBytes());
+            // 4. 插入数据
             User user = new User();
             user.setUserAccount(userAccount);
             user.setUserPassword(encryptPassword);
+            user.setAccessKey(accessKey);
+            user.setSecretKey(secretKey);
             boolean saveResult = this.save(user);
             if (!saveResult) {
                 throw new BusinessException(ErrorCode.SYSTEM_ERROR, "注册失败，数据库错误");

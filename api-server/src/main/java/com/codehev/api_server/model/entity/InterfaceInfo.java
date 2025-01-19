@@ -39,6 +39,9 @@ public class InterfaceInfo implements Serializable {
 
     /**
      * 请求参数
+     * [
+     * 	    {"name": "username", "type": "string"}
+     * ]
      */
     @TableField(value = "requestParams")
     private String requestParams;
