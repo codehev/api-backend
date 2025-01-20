@@ -5,7 +5,7 @@
 
     <groupId>com.codehev.api-consumer</groupId>
     <artifactId>api-consumer</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.1</version>
 
     <name>api-consumer</name>
     <description>api-consumer</description>
@@ -23,7 +23,7 @@
             <version>5.8.16</version>
         </dependency>
         <dependency>
-            <groupId>com.codehev.api-client-sdk</groupId>
+            <groupId>com.codehev</groupId>
             <artifactId>api-client-sdk</artifactId>
             <version>0.0.1</version>
         </dependency>

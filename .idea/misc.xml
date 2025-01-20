@@ -11,6 +11,7 @@
         <option value="$PROJECT_DIR$/api-interface/pom.xml" />
         <option value="$PROJECT_DIR$/api-client-sdk/pom.xml" />
         <option value="$PROJECT_DIR$/api-consumer/pom.xml" />
+        <option value="$PROJECT_DIR$/api-common/pom.xml" />
       </list>
     </option>
   </component>

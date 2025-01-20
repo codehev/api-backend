@@ -1,4 +1,4 @@
-package com.codehev.api_client_sdk.utils;
+package com.codehev.api_common.utils;
 
 import cn.hutool.crypto.digest.DigestAlgorithm;
 import cn.hutool.crypto.digest.Digester;

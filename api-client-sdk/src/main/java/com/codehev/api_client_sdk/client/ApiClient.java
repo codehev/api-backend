@@ -4,8 +4,8 @@ import cn.hutool.core.util.RandomUtil;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
 import cn.hutool.json.JSONUtil;
-import com.codehev.api_client_sdk.model.User;
-import com.codehev.api_client_sdk.utils.SignUtils;
+import com.codehev.api_common.model.interface_entity.User;
+import com.codehev.api_common.utils.SignUtils;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,10 +1,5 @@
-# 应用服务 WEB 访问端口
-server:
-  address: 0.0.0.0
-  port: 8101
-  servlet:
-    context-path: /api
-
+# 公共配置文件
+# @author <a href="https://github.com/codehev">codehev</a>
 
 spring:
   application:
@@ -16,3 +11,37 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
+  # session 配置
+  session:
+    # 30 天过期
+    timeout: 2592000
+  # 数据库配置
+  # todo 需替换配置
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://101.126.44.74:3306/api
+    username: api
+    password: BphX8GNHwHJ8Y4X
+  # 文件上传
+  servlet:
+    multipart:
+      # 大小限制
+      max-file-size: 10MB
+server:
+  address: 0.0.0.0
+  port: 8101
+  servlet:
+    context-path: /api
+    # cookie 30 天过期
+    session:
+      cookie:
+        max-age: 2592000
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: false
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      logic-delete-field: isDelete # 全局逻辑删除的实体字段名
+      logic-delete-value: 1 # 逻辑已删除值（默认为 1）
+      logic-not-delete-value: 0 # 逻辑未删除值（默认为 0）

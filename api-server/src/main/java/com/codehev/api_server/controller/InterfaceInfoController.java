@@ -131,19 +131,20 @@ public class InterfaceInfoController {
         if (idRequest == null || idRequest.getId() <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        // 1. 校验接口是否存在、
+        // 1. 校验接口是否存在
         InterfaceInfo interfaceInfo = interfaceInfoService.getById(idRequest.getId());
         if (interfaceInfo == null) {
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR,"接口不存在");
         }
 
-        // 2. TODO 判断该接口是否可以被调用
-        // todo 接口名称都是固定的，而不是通过地址来映射到相应的接口
-        com.codehev.api_client_sdk.model.User user = new com.codehev.api_client_sdk.model.User();
+        // 2. 判断该接口是否可以被调用
+        // todo 固定方法改为根据测试地址来调用
+        com.codehev.api_common.model.interface_entity.User user = new com.codehev.api_common.model.interface_entity.User();
         user.setUserName("测试");
         user.setAge(18);
         String name = apiClient.getUserNameByPost(user);
         ThrowUtils.throwIf(name == null, ErrorCode.OPERATION_ERROR,"接口连通性测试失败");
+
         // 3. 修改数据接口表的status字段为1（表示开启）
         InterfaceInfo info = new InterfaceInfo();
         info.setId(idRequest.getId());
@@ -201,14 +202,14 @@ public class InterfaceInfoController {
         if (!interfaceInfo.getStatus().equals(InterfaceInfoStatusEnum.ONLINE.getValue())) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR,"接口已关闭");
         }
-        // 3. 调用接口 TODO 固定调用，后期添加网关再改
+        // 3. 调用接口 TODO 固定方法名改为根据测试地址来调用
         User loginUser = userService.getLoginUser(request);
         String accessKey = loginUser.getAccessKey();
         String secretKey = loginUser.getSecretKey();
         ApiClient tempApiClient = new ApiClient(accessKey, secretKey);
 
         String userRequestParams = interfaceInfoInvokeRequest.getUserRequestParams();
-        com.codehev.api_client_sdk.model.User user = GSON.fromJson(userRequestParams, com.codehev.api_client_sdk.model.User.class);
+        com.codehev.api_common.model.interface_entity.User user = GSON.fromJson(userRequestParams, com.codehev.api_common.model.interface_entity.User.class);
         String name = tempApiClient.getUserNameByPost(user);
         ThrowUtils.throwIf(name == null, ErrorCode.OPERATION_ERROR,"接口调用失败");
         return ResultUtils.success(name);
