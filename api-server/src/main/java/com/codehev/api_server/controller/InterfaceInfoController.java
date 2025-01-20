@@ -1,9 +1,14 @@
 package com.codehev.api_server.controller;
 
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.codehev.api_client_sdk.client.ApiClient;
+import com.codehev.api_common.common.BaseResponse;
+import com.codehev.api_common.common.ErrorCode;
+import com.codehev.api_common.common.ResultUtils;
 import com.codehev.api_server.annotation.AuthCheck;
-import com.codehev.api_server.common.*;
+import com.codehev.api_server.common.DeleteRequest;
+import com.codehev.api_server.common.IdRequest;
 import com.codehev.api_server.constant.UserConstant;
 import com.codehev.api_server.exception.BusinessException;
 import com.codehev.api_server.exception.ThrowUtils;
@@ -21,6 +26,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 /**
  * 接口管理
@@ -127,33 +134,64 @@ public class InterfaceInfoController {
      */
     @PostMapping("/online")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
-    public BaseResponse<Boolean> onlineInterfaceInfo(@RequestBody IdRequest idRequest) {
+    public BaseResponse<?> onlineInterfaceInfo(@RequestBody IdRequest idRequest) {
         if (idRequest == null || idRequest.getId() <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         // 1. 校验接口是否存在
         InterfaceInfo interfaceInfo = interfaceInfoService.getById(idRequest.getId());
         if (interfaceInfo == null) {
-            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR,"接口不存在");
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "接口不存在");
         }
 
         // 2. 判断该接口是否可以被调用
         // todo 固定方法改为根据测试地址来调用
-        com.codehev.api_common.model.interface_entity.User user = new com.codehev.api_common.model.interface_entity.User();
-        user.setUserName("测试");
-        user.setAge(18);
-        String name = apiClient.getUserNameByPost(user);
-        ThrowUtils.throwIf(name == null, ErrorCode.OPERATION_ERROR,"接口连通性测试失败");
+//        com.codehev.api_common.model.interface_entity.User user = new com.codehev.api_common.model.interface_entity.User();
+//        user.setUserName("测试");
+//        user.setAge(18);
+//        String name = apiClient.getUserNameByPost(user);
+//        ThrowUtils.throwIf(name == null, ErrorCode.OPERATION_ERROR, "接口连通性测试失败");
+
+        // 通过反射动态获取接口方法
+        String interfaceInfoName = interfaceInfo.getName();
+        String requestParams = interfaceInfo.getRequestParams();
+        Class<? extends ApiClient> apiClientClass = apiClient.getClass();
+        Method[] classMethods = apiClientClass.getMethods();
+        for (Method method : classMethods) {
+            if (method.getName().equals(interfaceInfoName)) {
+                try {
+                    // 目前不是restful风格，只发GET、POST请求。GET 请求的参数会直接拼接到URL中（代码中GET请求的params 是一个对象，会自动转为URL 中的 query string），而POST请求的参数会放在请求体中（json）。但后端都是通过对象来接收
+                    // 测试接口api接收InterfaceInfoInvokeRequest对象，其中userRequestParams属性是当前测试接口的参数json字符串（GET或POST的参数）
+                    // todo 目前做的比较简单，支持非restful风格，只发GET、POST请求，后期再扩展（参考Knife4j）
+                    BaseResponse<?> baseResponse;
+                    if (JSONUtil.isTypeJSON(requestParams)) {
+                        //是否为JSON类型字符串，首尾都为大括号或中括号判定为JSON字符串
+                        baseResponse = (BaseResponse<?>) method.invoke(apiClient, GSON.fromJson(requestParams, method.getParameterTypes()[0]));
+                    } else {
+                        //解析不了就是字符串，非封装对象，对于GET请求一个参数直接写字符串，多个参数写json对象，后端封装对象接收
+                        baseResponse = (BaseResponse<?>) method.invoke(apiClient, requestParams);
+                    }
+                    if (baseResponse.getCode() != 0) {
+                        throw new BusinessException(ErrorCode.OPERATION_ERROR, "接口连通性测试失败");
+                    }
+                    break;
+                } catch (IllegalAccessException | InvocationTargetException e) {
+                    throw new BusinessException(ErrorCode.OPERATION_ERROR, "接口连通性测试异常");
+                }
+            }
+        }
+
 
         // 3. 修改数据接口表的status字段为1（表示开启）
         InterfaceInfo info = new InterfaceInfo();
         info.setId(idRequest.getId());
         info.setStatus(InterfaceInfoStatusEnum.ONLINE.getValue());
         boolean updated = interfaceInfoService.updateById(info);
-        ThrowUtils.throwIf(!updated, ErrorCode.OPERATION_ERROR,"更新数据失败");
+        ThrowUtils.throwIf(!updated, ErrorCode.OPERATION_ERROR, "更新数据失败");
 
         return ResultUtils.success(updated);
     }
+
     /**
      * 下线接口（仅管理员）
      *
@@ -163,13 +201,13 @@ public class InterfaceInfoController {
     @PostMapping("/offline")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     public BaseResponse<Boolean> offlineInterfaceInfo(@RequestBody IdRequest idRequest) {
-       if (idRequest == null || idRequest.getId() <= 0) {
+        if (idRequest == null || idRequest.getId() <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         // 1. 校验接口是否存在、
         InterfaceInfo interfaceInfo = interfaceInfoService.getById(idRequest.getId());
         if (interfaceInfo == null) {
-            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR,"接口不存在");
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "接口不存在");
         }
 
         // 2. 修改数据接口表的status字段为0（表示下线）
@@ -177,7 +215,7 @@ public class InterfaceInfoController {
         info.setId(idRequest.getId());
         info.setStatus(InterfaceInfoStatusEnum.OFFLINE.getValue());
         boolean updated = interfaceInfoService.updateById(info);
-        ThrowUtils.throwIf(!updated, ErrorCode.OPERATION_ERROR,"更新数据失败");
+        ThrowUtils.throwIf(!updated, ErrorCode.OPERATION_ERROR, "更新数据失败");
 
         return ResultUtils.success(updated);
     }
@@ -189,18 +227,18 @@ public class InterfaceInfoController {
      * @return
      */
     @PostMapping("/invoke")
-    public BaseResponse<Object> invokeInterfaceInfo(@RequestBody InterfaceInfoInvokeRequest interfaceInfoInvokeRequest,HttpServletRequest request) {
-       if (interfaceInfoInvokeRequest == null || interfaceInfoInvokeRequest.getId() <= 0) {
+    public BaseResponse<?> invokeInterfaceInfo(@RequestBody InterfaceInfoInvokeRequest interfaceInfoInvokeRequest, HttpServletRequest request) {
+        if (interfaceInfoInvokeRequest == null || interfaceInfoInvokeRequest.getId() <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         // 1. 校验接口是否存在
         InterfaceInfo interfaceInfo = interfaceInfoService.getById(interfaceInfoInvokeRequest.getId());
         if (interfaceInfo == null) {
-            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR,"接口不存在");
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "接口不存在");
         }
         // 2. 判断接口是否开启
         if (!interfaceInfo.getStatus().equals(InterfaceInfoStatusEnum.ONLINE.getValue())) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR,"接口已关闭");
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "接口已关闭");
         }
         // 3. 调用接口 TODO 固定方法名改为根据测试地址来调用
         User loginUser = userService.getLoginUser(request);
@@ -208,14 +246,31 @@ public class InterfaceInfoController {
         String secretKey = loginUser.getSecretKey();
         ApiClient tempApiClient = new ApiClient(accessKey, secretKey);
 
+        // 通过反射动态获取接口方法
+        String interfaceInfoName = interfaceInfo.getName();
         String userRequestParams = interfaceInfoInvokeRequest.getUserRequestParams();
-        com.codehev.api_common.model.interface_entity.User user = GSON.fromJson(userRequestParams, com.codehev.api_common.model.interface_entity.User.class);
-        String name = tempApiClient.getUserNameByPost(user);
-        ThrowUtils.throwIf(name == null, ErrorCode.OPERATION_ERROR,"接口调用失败");
-        return ResultUtils.success(name);
+        Class<? extends ApiClient> tempApiClientClass = tempApiClient.getClass();
+        Method[] classMethods = tempApiClientClass.getMethods();
+        for (Method method : classMethods) {
+            if (method.getName().equals(interfaceInfoName)) {
+                try {
+                    // 目前不是restful风格，只发GET、POST请求。GET 请求的参数会直接拼接到URL中（代码中GET请求的params 是一个对象，会自动转为URL 中的 query string），而POST请求的参数会放在请求体中（json）。但后端都是通过对象来接收
+                    // 测试接口api接收InterfaceInfoInvokeRequest对象，其中userRequestParams属性是当前测试接口的参数json字符串（GET或POST的参数）
+                    // todo 目前做的比较简单，支持非restful风格，只发GET、POST请求，后期再扩展（参考Knife4j）
+                    if (JSONUtil.isTypeJSON(userRequestParams)) {
+                        return (BaseResponse<?>) method.invoke(tempApiClient, GSON.fromJson(userRequestParams, method.getParameterTypes()[0]));
+                    }
+                    //解析不了就是字符串，非封装对象，对于GET请求一个参数直接写字符串，多个参数写json对象，后端封装对象接收
+                    return (BaseResponse<?>) method.invoke(tempApiClient, userRequestParams);
+                } catch (IllegalAccessException | InvocationTargetException e) {
+                    throw new BusinessException(ErrorCode.OPERATION_ERROR, "接口调用异常");
+                }
+            }
+        }
+        return ResultUtils.error(ErrorCode.OPERATION_ERROR, "接口调用失败");
     }
 
-     /**
+    /**
      * 根据 id 获取
      *
      * @param id
@@ -250,7 +305,8 @@ public class InterfaceInfoController {
         }
         return ResultUtils.success(interfaceInfoService.getInterfaceInfoVO(interfaceInfo, request));
     }
-        /**
+
+    /**
      * 分页获取列表（封装类）
      *
      * @param interfaceInfoQueryRequest
@@ -258,8 +314,8 @@ public class InterfaceInfoController {
      * @return
      */
     @GetMapping("/list/page")
-    public BaseResponse<Page<InterfaceInfo>> listInterfaceInfoByPage( InterfaceInfoQueryRequest interfaceInfoQueryRequest,
-            HttpServletRequest request) {
+    public BaseResponse<Page<InterfaceInfo>> listInterfaceInfoByPage(InterfaceInfoQueryRequest interfaceInfoQueryRequest,
+                                                                     HttpServletRequest request) {
         long current = interfaceInfoQueryRequest.getCurrent();
         long size = interfaceInfoQueryRequest.getPageSize();
         // 限制爬虫
@@ -278,7 +334,7 @@ public class InterfaceInfoController {
      */
     @PostMapping("/list/page/vo")
     public BaseResponse<Page<InterfaceInfoVO>> listInterfaceInfoVOByPage(@RequestBody InterfaceInfoQueryRequest interfaceInfoQueryRequest,
-            HttpServletRequest request) {
+                                                                         HttpServletRequest request) {
         long current = interfaceInfoQueryRequest.getCurrent();
         long size = interfaceInfoQueryRequest.getPageSize();
         // 限制爬虫
@@ -297,7 +353,7 @@ public class InterfaceInfoController {
      */
     @PostMapping("/my/list/page/vo")
     public BaseResponse<Page<InterfaceInfoVO>> listMyInterfaceInfoVOByPage(@RequestBody InterfaceInfoQueryRequest interfaceInfoQueryRequest,
-            HttpServletRequest request) {
+                                                                           HttpServletRequest request) {
         if (interfaceInfoQueryRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }

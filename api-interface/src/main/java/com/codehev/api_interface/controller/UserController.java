@@ -2,6 +2,9 @@ package com.codehev.api_interface.controller;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.codehev.api_common.common.BaseResponse;
+import com.codehev.api_common.common.ErrorCode;
+import com.codehev.api_common.common.ResultUtils;
 import com.codehev.api_common.utils.SignUtils;
 import com.codehev.api_interface.model.entity.User;
 import com.codehev.api_interface.service.UserService;
@@ -25,22 +28,41 @@ public class UserController {
 
     /**
      * pathName是/api/name/（不能少了最后的/）
-     * http://127.0.0.1:8101/api/name/?userName=123
+     * http://127.0.0.1:8102/api/name/?userName=123
      *
      * @param userName
      * @return
      */
     @GetMapping("/")
-    public String getNameByGet(@RequestParam String userName, HttpServletRequest request) {
-        apiAuth(request);
-        return userName;
+    public BaseResponse<?> getNameByGet(@RequestParam String userName, HttpServletRequest request) {
+        if (StringUtils.isBlank(userName)) {
+            return ResultUtils.error(ErrorCode.PARAMS_ERROR);
+        }
+         BaseResponse<?> baseResponse = apiAuth(request);
+        if (baseResponse.getCode() != 0) {
+            return baseResponse;
+        }
+        return ResultUtils.success(userName);
     }
 
+    /**
+     * 获取用户名
+     *
+     * @param user
+     * @param request
+     * @return
+     */
 
     @PostMapping("/")
-    public String getUserNameByPost(@RequestBody com.codehev.api_interface.model.entity.User user, HttpServletRequest request) {
-        apiAuth(request);
-        return user.getUserName();
+    public BaseResponse<?> getUserNameByPost(@RequestBody com.codehev.api_common.model.entity.User user, HttpServletRequest request) {
+        if (user == null) {
+            ResultUtils.error(ErrorCode.PARAMS_ERROR);
+        }
+        BaseResponse<?> baseResponse = apiAuth(request);
+        if (baseResponse.getCode() != 0) {
+            return baseResponse;
+        }
+        return ResultUtils.success(user.getUserName());
     }
 
     /**
@@ -48,13 +70,19 @@ public class UserController {
      *
      * @param request 请求
      */
-    public void apiAuth(HttpServletRequest request) {
+    public BaseResponse<String> apiAuth(HttpServletRequest request) {
         // 从请求头中获取参数
         String accessKey = request.getHeader("accessKey");
         String nonce = request.getHeader("nonce");
         String timestamp = request.getHeader("timestamp");
         String sign = request.getHeader("sign");
         String body = request.getHeader("body");
+        if (StringUtils.isBlank(accessKey)
+                || StringUtils.isBlank(nonce)
+                || StringUtils.isBlank(timestamp)
+                || StringUtils.isBlank(sign)) {
+            return ResultUtils.error(ErrorCode.PARAMS_ERROR, "请求头参数为空");
+        }
 
         // 1. todo 实际情况应该是去数据库中查是否已分配给用户
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
@@ -63,24 +91,25 @@ public class UserController {
         try {
             user = userService.getOne(queryWrapper);
         } catch (Exception e) {
-            throw new RuntimeException("查询失败");
+            return ResultUtils.error(ErrorCode.NO_AUTH_ERROR, "accessKey不存在");
         }
         if (user == null) {
-            throw new RuntimeException("无权限");
+            return ResultUtils.error(ErrorCode.NO_AUTH_ERROR, "无效accessKey");
         }
         // 2. todo 校验随机数，模拟一下，直接判断nonce是否大于10000
-        if (Long.parseLong(nonce) > 100000) {
-            throw new RuntimeException("无权限");
+        if (Long.parseLong(nonce) > 100000 || Long.parseLong(nonce) < 10000) {
+            return ResultUtils.error(ErrorCode.NO_AUTH_ERROR, "无效nonce");
         }
 
         // 3. todo 时间和当前时间不能超过5分钟
         if (System.currentTimeMillis() / 1000 - Long.parseLong(timestamp) / 1000 > 60 * 5) {
-            throw new RuntimeException("无权限");
+            return ResultUtils.error(ErrorCode.NO_AUTH_ERROR, "请求过期");
         }
         // 4. todo 生成签名，判断签名是否正确。secretKey从数据库中查询
         String genSign = SignUtils.genSign(body, user.getSecretKey());
         if (!sign.equals(genSign)) {
-            throw new RuntimeException("无权限");
+            return ResultUtils.error(ErrorCode.NO_AUTH_ERROR, "验签失败");
         }
+        return ResultUtils.success(null);
     }
 }

@@ -3,7 +3,7 @@ package com.codehev.api_server.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.codehev.api_server.common.ErrorCode;
+import com.codehev.api_common.common.ErrorCode;
 import com.codehev.api_server.constant.CommonConstant;
 import com.codehev.api_server.exception.BusinessException;
 import com.codehev.api_server.exception.ThrowUtils;

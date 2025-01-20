@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.codehev.api_common.model.interface_entity;
+package com.codehev.api_common.model.entity;
 /**
  * @author <a href="https://github.com/codehev">codehev</a>
  * @email codehev@qq.com

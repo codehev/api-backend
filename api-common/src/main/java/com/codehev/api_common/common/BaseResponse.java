@@ -1,7 +1,9 @@
-package com.codehev.api_server.common;
+package com.codehev.api_common.common;
+
+
+import lombok.Data;
 
 import java.io.Serializable;
-import lombok.Data;
 
 /**
  * 通用返回类

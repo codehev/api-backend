@@ -1,11 +1,11 @@
 package com.codehev.api_server.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.codehev.api_common.common.BaseResponse;
+import com.codehev.api_common.common.ErrorCode;
+import com.codehev.api_common.common.ResultUtils;
 import com.codehev.api_server.annotation.AuthCheck;
-import com.codehev.api_server.common.BaseResponse;
 import com.codehev.api_server.common.DeleteRequest;
-import com.codehev.api_server.common.ErrorCode;
-import com.codehev.api_server.common.ResultUtils;
 import com.codehev.api_server.constant.UserConstant;
 import com.codehev.api_server.exception.BusinessException;
 import com.codehev.api_server.exception.ThrowUtils;
@@ -229,7 +229,7 @@ public class UserController {
      */
     @PostMapping("/list/page/vo")
     public BaseResponse<Page<UserVO>> listUserVOByPage(@RequestBody UserQueryRequest userQueryRequest,
-            HttpServletRequest request) {
+                                                       HttpServletRequest request) {
         if (userQueryRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }

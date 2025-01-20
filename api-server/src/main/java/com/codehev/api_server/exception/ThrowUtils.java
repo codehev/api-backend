@@ -1,6 +1,6 @@
 package com.codehev.api_server.exception;
 
-import com.codehev.api_server.common.ErrorCode;
+import com.codehev.api_common.common.ErrorCode;
 
 /**
  * 抛异常工具类

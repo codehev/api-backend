@@ -19,7 +19,7 @@ public class InterfaceInfoInvokeRequest implements Serializable {
     private Long id;
 
     /**
-     * 请求参数
+     * 请求参数（接送字符串）
      */
     private String userRequestParams;
 

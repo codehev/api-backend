@@ -1,7 +1,8 @@
 package com.codehev.api_consumer.client;
 
 import com.codehev.api_client_sdk.client.ApiClient;
-import com.codehev.api_common.model.interface_entity.User;
+import com.codehev.api_common.common.BaseResponse;
+import com.codehev.api_common.model.entity.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,8 +21,8 @@ class ApiClientTest {
 
     @Test
     void getNameByGet() {
-        String nameByGet = apiClient.getNameByGet("codehev");
-        System.out.println("nameByGet：" + nameByGet);
+        BaseResponse<String> nameByGet = apiClient.getNameByGet("codehev");
+        System.out.println("nameByGet：" + nameByGet.getData());
     }
 
     @Test
@@ -29,7 +30,7 @@ class ApiClientTest {
         User user = new User();
         user.setUserName("codehev");
         user.setAge(12);
-        String userNameByPost = apiClient.getUserNameByPost(user);
-        System.out.println("getUserNameByPost：" + userNameByPost);
+        BaseResponse<String> userNameByPost = apiClient.getUserNameByPost(user);
+        System.out.println("getUserNameByPost：" + userNameByPost.getData());
     }
 }

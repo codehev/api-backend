@@ -4,7 +4,7 @@ import cn.hutool.core.util.RandomUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.codehev.api_server.common.ErrorCode;
+import com.codehev.api_common.common.ErrorCode;
 import com.codehev.api_server.constant.CommonConstant;
 import com.codehev.api_server.constant.UserConstant;
 import com.codehev.api_server.exception.BusinessException;

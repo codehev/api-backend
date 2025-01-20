@@ -1,8 +1,8 @@
 package com.codehev.api_server.exception;
 
-import com.codehev.api_server.common.BaseResponse;
-import com.codehev.api_server.common.ErrorCode;
-import com.codehev.api_server.common.ResultUtils;
+import com.codehev.api_common.common.BaseResponse;
+import com.codehev.api_common.common.ErrorCode;
+import com.codehev.api_common.common.ResultUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;

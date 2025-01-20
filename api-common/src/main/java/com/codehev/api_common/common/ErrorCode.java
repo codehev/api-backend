@@ -1,4 +1,4 @@
-package com.codehev.api_server.common;
+package com.codehev.api_common.common;
 
 /**
  * 自定义错误码
