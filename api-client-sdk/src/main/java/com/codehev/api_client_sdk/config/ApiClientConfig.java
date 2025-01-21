@@ -9,10 +9,10 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 //确保某些类存在时才启用自动配置
-//只有当 MyService 类存在于类路径中时，才会加载 MyAutoConfiguration 类。
+//只有当 ApiClient 类存在于类路径中时，才会加载 MyAutoConfiguration 类。
 @ConditionalOnClass(ApiClient.class)
 //启用对 @ConfigurationProperties 注解类的支持
-//因为MyProperties并没有加类似于@Component的注解标记为bean，没法直接构造注入
+//因为ApiClientProperties并没有加类似于@Component的注解标记为bean，没法直接构造注入
 @EnableConfigurationProperties(ApiClientProperties.class)
 public class ApiClientConfig {
 
