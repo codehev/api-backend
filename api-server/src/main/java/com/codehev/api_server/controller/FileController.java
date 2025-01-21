@@ -5,7 +5,7 @@ import com.codehev.api_common.common.BaseResponse;
 import com.codehev.api_common.common.ErrorCode;
 import com.codehev.api_common.common.ResultUtils;
 import com.codehev.api_server.constant.FileConstant;
-import com.codehev.api_server.exception.BusinessException;
+import com.codehev.api_common.exception.BusinessException;
 import com.codehev.api_server.manager.CosManager;
 import com.codehev.api_server.model.dto.file.UploadFileRequest;
 import com.codehev.api_server.model.entity.User;

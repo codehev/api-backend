@@ -2,7 +2,7 @@ package com.codehev.api_server.aop;
 
 import com.codehev.api_common.common.ErrorCode;
 import com.codehev.api_server.annotation.AuthCheck;
-import com.codehev.api_server.exception.BusinessException;
+import com.codehev.api_common.exception.BusinessException;
 import com.codehev.api_server.model.entity.User;
 import com.codehev.api_server.model.enums.UserRoleEnum;
 import com.codehev.api_server.service.UserService;

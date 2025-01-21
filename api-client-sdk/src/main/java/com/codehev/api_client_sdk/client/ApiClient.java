@@ -7,8 +7,9 @@ import cn.hutool.json.JSONUtil;
 import com.codehev.api_common.common.BaseResponse;
 import com.codehev.api_common.common.ErrorCode;
 import com.codehev.api_common.common.ResultUtils;
-import com.codehev.api_common.model.entity.User;
+import com.codehev.api_common.exception.BusinessException;
 import com.codehev.api_common.utils.SignUtils;
+import com.codehev.api_model.model.entity.User;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -52,14 +53,16 @@ public class ApiClient {
         try {
             headers = getHeaders(userName);
         } catch (UnsupportedEncodingException e) {
-            return ResultUtils.error(ErrorCode.OPERATION_ERROR, "参数编码错误");
+//            return ResultUtils.error(ErrorCode.OPERATION_ERROR, "参数编码错误");
+            throw new BusinessException(ErrorCode.OPERATION_ERROR, "参数编码错误");
         }
         //form() 方法不仅适用于 POST 请求的表单参数，也适用于 GET 请求的 URL 参数。Hutool 会自动将 form() 方法添加的参数拼接到 GET 请求的 URL 中。
         HttpResponse httpResponse = HttpRequest.get("http://127.0.0.1:8102/api/name/")
                 .addHeaders(headers)
                 .form("userName", userName).execute();
         if (httpResponse.getStatus() != 200) {
-            return ResultUtils.error(httpResponse.getStatus(), "接口调用失败");
+//            return ResultUtils.error(httpResponse.getStatus(), "接口调用失败");
+             throw new BusinessException(ErrorCode.OPERATION_ERROR, "接口调用失败");
         }
         String result = httpResponse.body();
         return ResultUtils.success(result);
@@ -71,7 +74,8 @@ public class ApiClient {
         try {
             headers = getHeaders(json);
         } catch (UnsupportedEncodingException e) {
-            return ResultUtils.error(ErrorCode.OPERATION_ERROR, "参数编码错误");
+//            return ResultUtils.error(ErrorCode.OPERATION_ERROR, "参数编码错误");
+            throw new BusinessException(ErrorCode.OPERATION_ERROR, "参数编码错误");
         }
 
         HttpResponse httpResponse = HttpRequest.post("http://localhost:8102/api/name/")
@@ -81,7 +85,8 @@ public class ApiClient {
                 .execute();
 
         if (httpResponse.getStatus() != 200) {
-            return ResultUtils.error(httpResponse.getStatus(), "接口调用失败");
+//            return ResultUtils.error(httpResponse.getStatus(), "接口调用失败");
+            throw new BusinessException(ErrorCode.OPERATION_ERROR, "接口调用失败");
         }
         String result = httpResponse.body();
         return ResultUtils.success(result);

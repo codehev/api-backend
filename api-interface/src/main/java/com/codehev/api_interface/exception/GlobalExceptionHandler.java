@@ -1,4 +1,4 @@
-package com.codehev.api_server.exception;
+package com.codehev.api_interface.exception;
 
 
 import com.codehev.api_common.common.BaseResponse;

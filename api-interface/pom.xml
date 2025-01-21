@@ -17,8 +17,13 @@
 
         <dependency>
             <groupId>com.codehev</groupId>
+            <artifactId>api-model</artifactId>
+            <version>0.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.codehev</groupId>
             <artifactId>api-common</artifactId>
-            <version>1.0.0</version>
+            <version>0.0.1</version>
         </dependency>
 
         <!-- https://doc.xiaominfo.com/knife4j/documentation/get_start.html-->

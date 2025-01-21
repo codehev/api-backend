@@ -2,7 +2,7 @@ package com.codehev.api_consumer.client;
 
 import com.codehev.api_client_sdk.client.ApiClient;
 import com.codehev.api_common.common.BaseResponse;
-import com.codehev.api_common.model.entity.User;
+import com.codehev.api_model.model.entity.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.codehev.api_common.common.BaseResponse;
 import com.codehev.api_common.common.ErrorCode;
 import com.codehev.api_common.common.ResultUtils;
+import com.codehev.api_common.exception.BusinessException;
 import com.codehev.api_common.utils.SignUtils;
 import com.codehev.api_interface.model.entity.User;
 import com.codehev.api_interface.service.UserService;
@@ -34,14 +35,11 @@ public class UserController {
      * @return
      */
     @GetMapping("/")
-    public BaseResponse<?> getNameByGet(@RequestParam String userName, HttpServletRequest request) {
+    public BaseResponse<String> getNameByGet(@RequestParam String userName, HttpServletRequest request) {
         if (StringUtils.isBlank(userName)) {
             return ResultUtils.error(ErrorCode.PARAMS_ERROR);
         }
-         BaseResponse<?> baseResponse = apiAuth(request);
-        if (baseResponse.getCode() != 0) {
-            return baseResponse;
-        }
+        apiAuth(request);
         return ResultUtils.success(userName);
     }
 
@@ -54,14 +52,11 @@ public class UserController {
      */
 
     @PostMapping("/")
-    public BaseResponse<?> getUserNameByPost(@RequestBody com.codehev.api_common.model.entity.User user, HttpServletRequest request) {
+    public BaseResponse<String> getUserNameByPost(@RequestBody com.codehev.api_model.model.entity.User user, HttpServletRequest request) {
         if (user == null) {
             ResultUtils.error(ErrorCode.PARAMS_ERROR);
         }
-        BaseResponse<?> baseResponse = apiAuth(request);
-        if (baseResponse.getCode() != 0) {
-            return baseResponse;
-        }
+        apiAuth(request);
         return ResultUtils.success(user.getUserName());
     }
 
@@ -70,7 +65,7 @@ public class UserController {
      *
      * @param request 请求
      */
-    public BaseResponse<String> apiAuth(HttpServletRequest request) {
+    public void apiAuth(HttpServletRequest request) {
         // 从请求头中获取参数
         String accessKey = request.getHeader("accessKey");
         String nonce = request.getHeader("nonce");
@@ -81,7 +76,8 @@ public class UserController {
                 || StringUtils.isBlank(nonce)
                 || StringUtils.isBlank(timestamp)
                 || StringUtils.isBlank(sign)) {
-            return ResultUtils.error(ErrorCode.PARAMS_ERROR, "请求头参数为空");
+//            return ResultUtils.error(ErrorCode.PARAMS_ERROR, "请求头参数为空");
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "请求头参数为空");
         }
 
         // 1. todo 实际情况应该是去数据库中查是否已分配给用户
@@ -91,25 +87,29 @@ public class UserController {
         try {
             user = userService.getOne(queryWrapper);
         } catch (Exception e) {
-            return ResultUtils.error(ErrorCode.NO_AUTH_ERROR, "accessKey不存在");
+//            return ResultUtils.error(ErrorCode.NO_AUTH_ERROR, "accessKey不存在");
+            throw new BusinessException(ErrorCode.NO_AUTH_ERROR, "accessKey不存在");
         }
         if (user == null) {
-            return ResultUtils.error(ErrorCode.NO_AUTH_ERROR, "无效accessKey");
+//            return ResultUtils.error(ErrorCode.NO_AUTH_ERROR, "无效accessKey");
+            throw new BusinessException(ErrorCode.NO_AUTH_ERROR, "无效accessKey");
         }
         // 2. todo 校验随机数，模拟一下，直接判断nonce是否大于10000
         if (Long.parseLong(nonce) > 100000 || Long.parseLong(nonce) < 10000) {
-            return ResultUtils.error(ErrorCode.NO_AUTH_ERROR, "无效nonce");
+//            return ResultUtils.error(ErrorCode.NO_AUTH_ERROR, "无效nonce");
+            throw new BusinessException(ErrorCode.NO_AUTH_ERROR, "无效nonce");
         }
 
         // 3. todo 时间和当前时间不能超过5分钟
         if (System.currentTimeMillis() / 1000 - Long.parseLong(timestamp) / 1000 > 60 * 5) {
-            return ResultUtils.error(ErrorCode.NO_AUTH_ERROR, "请求过期");
+//            return ResultUtils.error(ErrorCode.NO_AUTH_ERROR, "请求过期");
+            throw new BusinessException(ErrorCode.NO_AUTH_ERROR, "请求过期");
         }
         // 4. todo 生成签名，判断签名是否正确。secretKey从数据库中查询
         String genSign = SignUtils.genSign(body, user.getSecretKey());
         if (!sign.equals(genSign)) {
-            return ResultUtils.error(ErrorCode.NO_AUTH_ERROR, "验签失败");
+//            return ResultUtils.error(ErrorCode.NO_AUTH_ERROR, "验签失败");
+            throw new BusinessException(ErrorCode.NO_AUTH_ERROR, "验签失败");
         }
-        return ResultUtils.success(null);
     }
 }

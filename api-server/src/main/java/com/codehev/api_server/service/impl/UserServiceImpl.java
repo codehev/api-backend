@@ -7,7 +7,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.codehev.api_common.common.ErrorCode;
 import com.codehev.api_server.constant.CommonConstant;
 import com.codehev.api_server.constant.UserConstant;
-import com.codehev.api_server.exception.BusinessException;
+import com.codehev.api_common.exception.BusinessException;
 import com.codehev.api_server.mapper.UserMapper;
 import com.codehev.api_server.model.dto.user.UserQueryRequest;
 import com.codehev.api_server.model.entity.User;

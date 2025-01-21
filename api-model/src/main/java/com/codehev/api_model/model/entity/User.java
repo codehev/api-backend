@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.codehev.api_common.model.entity;
+package com.codehev.api_model.model.entity;
 /**
  * @author <a href="https://github.com/codehev">codehev</a>
  * @email codehev@qq.com
  * @date 2025/1/13 13:37
- * @description
+ * @description 接口服务的用户实体
  */
 public class User {
 
