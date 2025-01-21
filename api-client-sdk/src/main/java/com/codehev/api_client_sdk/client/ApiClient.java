@@ -27,10 +27,24 @@ import java.util.Map;
 public class ApiClient {
     private String accessKey;
     private String secretKey;
+    private String host;
+    private Integer port;
+    private String baseUrl;
 
     public ApiClient(String accessKey, String secretKey) {
         this.accessKey = accessKey;
         this.secretKey = secretKey;
+        this.host = "127.0.0.1";
+        this.port = 8102;
+        this.baseUrl = "http://" + this.host + ":" + this.port;
+    }
+
+    public ApiClient(String accessKey, String secretKey, String host, Integer port) {
+        this.accessKey = accessKey;
+        this.secretKey = secretKey;
+        this.host = host;
+        this.port = port;
+        this.baseUrl = "http://" + host + ":" + port;
     }
 
     private Map<String, String> getHeaders(String body) throws UnsupportedEncodingException {
@@ -53,16 +67,14 @@ public class ApiClient {
         try {
             headers = getHeaders(userName);
         } catch (UnsupportedEncodingException e) {
-//            return ResultUtils.error(ErrorCode.OPERATION_ERROR, "参数编码错误");
             throw new BusinessException(ErrorCode.OPERATION_ERROR, "参数编码错误");
         }
         //form() 方法不仅适用于 POST 请求的表单参数，也适用于 GET 请求的 URL 参数。Hutool 会自动将 form() 方法添加的参数拼接到 GET 请求的 URL 中。
-        HttpResponse httpResponse = HttpRequest.get("http://127.0.0.1:8102/api/name/")
+        HttpResponse httpResponse = HttpRequest.get(baseUrl+"/api/name/")
                 .addHeaders(headers)
                 .form("userName", userName).execute();
         if (httpResponse.getStatus() != 200) {
-//            return ResultUtils.error(httpResponse.getStatus(), "接口调用失败");
-             throw new BusinessException(ErrorCode.OPERATION_ERROR, "接口调用失败");
+            throw new BusinessException(ErrorCode.OPERATION_ERROR, "接口调用失败");
         }
         String result = httpResponse.body();
         return ResultUtils.success(result);
@@ -74,18 +86,16 @@ public class ApiClient {
         try {
             headers = getHeaders(json);
         } catch (UnsupportedEncodingException e) {
-//            return ResultUtils.error(ErrorCode.OPERATION_ERROR, "参数编码错误");
             throw new BusinessException(ErrorCode.OPERATION_ERROR, "参数编码错误");
         }
 
-        HttpResponse httpResponse = HttpRequest.post("http://localhost:8102/api/name/")
+        HttpResponse httpResponse = HttpRequest.post(baseUrl+"/api/name/")
                 .header("Content-Type", "application/json; charset=UTF-8")
                 .addHeaders(headers)
                 .body(json)
                 .execute();
 
         if (httpResponse.getStatus() != 200) {
-//            return ResultUtils.error(httpResponse.getStatus(), "接口调用失败");
             throw new BusinessException(ErrorCode.OPERATION_ERROR, "接口调用失败");
         }
         String result = httpResponse.body();

@@ -34,10 +34,10 @@ spring:
     password: Code1024
   # Elasticsearch 配置
   # todo 需替换配置，然后取消注释
-#  elasticsearch:
-#    uris: http://localhost:9200
-#    username: root
-#    password: 123456
+  #  elasticsearch:
+  #    uris: http://localhost:9200
+  #    username: root
+  #    password: 123456
   # 文件上传
   servlet:
     multipart:
@@ -96,3 +96,5 @@ api:
   client:
     access-key: codehev
     secret-key: 123abc
+    host: 127.0.0.1
+    port: 8102

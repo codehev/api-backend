@@ -10,10 +10,12 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @description
  */
 @Data
+// 指定配置前缀
 @ConfigurationProperties("api.client")
 public class ApiClientProperties {
-    private String accessKey;
-    private String secretKey;
-    private String host;
-    private Integer port;
+    // 设置默认值
+    private String accessKey = "codehev";
+    private String secretKey = "123abc";
+    private String host = "127.0.0.1";
+    private Integer port = 8102;
 }

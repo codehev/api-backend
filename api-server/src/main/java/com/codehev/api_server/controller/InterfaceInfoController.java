@@ -22,6 +22,7 @@ import com.codehev.api_server.service.UserService;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -40,6 +41,11 @@ import java.lang.reflect.Method;
 @RequestMapping("/interfaceInfo")
 @Slf4j
 public class InterfaceInfoController {
+
+    @Value("${api.client.host:127.0.0.1}")
+    private String host;
+    @Value("${api.client.port:8102}")
+    private Integer port;
 
     @Resource
     private ApiClient apiClient;
@@ -146,12 +152,6 @@ public class InterfaceInfoController {
 
         // 2. 判断该接口是否可以被调用
         // todo 固定方法改为根据测试地址来调用
-//        com.codehev.api_common.model.interface_entity.User user = new com.codehev.api_common.model.interface_entity.User();
-//        user.setUserName("测试");
-//        user.setAge(18);
-//        String name = apiClient.getUserNameByPost(user);
-//        ThrowUtils.throwIf(name == null, ErrorCode.OPERATION_ERROR, "接口连通性测试失败");
-
         // 通过反射动态获取接口方法
         String interfaceInfoName = interfaceInfo.getName();
         String requestParams = interfaceInfo.getRequestParams();
@@ -244,7 +244,7 @@ public class InterfaceInfoController {
         User loginUser = userService.getLoginUser(request);
         String accessKey = loginUser.getAccessKey();
         String secretKey = loginUser.getSecretKey();
-        ApiClient tempApiClient = new ApiClient(accessKey, secretKey);
+        ApiClient tempApiClient = new ApiClient(accessKey, secretKey, host, port);
 
         // 通过反射动态获取接口方法
         String interfaceInfoName = interfaceInfo.getName();

@@ -24,6 +24,11 @@ public class ApiClientConfig {
 
     @Bean
     public ApiClient apiClient() {
-        return new ApiClient(apiClientProperties.getAccessKey(), apiClientProperties.getSecretKey());
+        String accessKey = apiClientProperties.getAccessKey();
+        String secretKey = apiClientProperties.getSecretKey();
+        String host = apiClientProperties.getHost();
+        Integer port = apiClientProperties.getPort();
+
+        return new ApiClient(accessKey, secretKey, host, port);
     }
 }
